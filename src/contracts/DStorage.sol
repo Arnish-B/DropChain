@@ -1,33 +1,67 @@
-pragma solidity ^0.5.0;
+ // SPDX-License-Identifier: MIT
+pragma solidity >=0.4.22 <0.9.0;
 
 contract DStorage {
-  // Name
-  // Number of files
-  // Mapping fileId=>Struct 
+  string public name = 'DStorage';
+  uint public fileCount = 0;
+  mapping(uint => File) public files;
 
-  // Struct
+  address payable admin;
 
 
-  // Event
 
-  constructor() public {
+  struct File {
+    uint fileId;
+    string fileHash;
+    uint filesize;
+    string fileType;
+    string fileName;
+    string fileDescription;
+    uint uploadTime;
+    address payable uploader;
   }
 
-  // Upload File function
+  event FileUploaded(
+    uint fileId,
+    string fileHash, 
+    uint filesize, 
+    string fileType, 
+    string fileName, 
+    string fileDescription, 
+    uint uploadTime, 
+    address payable uploader
+    );
 
-    // Make sure the file hash exists
+  constructor() public {
+    admin = payable(msg.sender);
+  }
 
-    // Make sure file type exists
+  function uploadFile(string memory _fileHash, uint _filesize, string memory _fileType, string memory _fileName, string memory _fileDescription) public {
 
-    // Make sure file description exists
+    require(bytes(_fileHash).length > 0);
+    require(bytes(_fileType).length > 0);
+    require(bytes(_fileName).length > 0);
+    require(bytes(_fileDescription).length > 0);
+    require(msg.sender!=address(0));
+    require(_filesize > 0);
 
-    // Make sure file fileName exists
+    fileCount++;
 
-    // Make sure uploader address exists
+    // files[fileCount] = File( fileCount, _fileHash, _filesize, _fileType, _fileName, _fileDescription, block.timestamp, admin);
 
-    // Make sure file size is more than 0
+    files[fileCount] = File({
+      fileId: fileCount,
+      fileHash: _fileHash,
+      filesize: _filesize,
+      fileType: _fileType,
+      fileName: _fileName,
+      fileDescription: _fileDescription,
+      uploadTime: block.timestamp,
+      uploader: admin
+    });
 
-
+    emit FileUploaded(fileCount, _fileHash, _filesize, _fileType, _fileName, _fileDescription, block.timestamp, payable(msg.sender));
+  }
     // Increment file id
 
     // Add File to the contract
