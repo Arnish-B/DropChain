@@ -1,6 +1,36 @@
     import React from "react";
+    // import Web3 from 'web3';
 
     function Form(props) {
+    const uploadFile = description => {
+        console.log("Submitting file to IPFS...")
+    
+        // Add file to the IPFS
+        ipfs.add(this.state.buffer, (error, result) => {
+            console.log('IPFS result', result.size)
+            if(error) {
+            console.error(error)
+            return
+            }
+    
+            this.setState({ loading: true })
+            // Assign value for the file without extension
+            if(this.state.type === ''){
+            this.setState({type: 'none'})
+            }
+            this.state.dstorage.methods.uploadFile(result[0].hash, result[0].size, this.state.type, this.state.name, description).send({ from: this.state.account }).on('transactionHash', (hash) => {
+            this.setState({
+            loading: false,
+            type: null,
+            name: null
+            })
+            window.location.reload()
+            }).on('error', (e) =>{
+            window.alert('Error')
+            this.setState({loading: false})
+            })
+        })
+        }
     return (
     <div className="flex">
         <div className="p-4 max-w-sm bg-white rounded-lg border border-gray-200 shadow-md sm:p-6 lg:p-8 dark:bg-gray-800 dark:border-gray-700 flex items-center mx-auto my-8">
@@ -9,7 +39,7 @@
             onSubmit={(event) => {
             event.preventDefault();
             const description = fileDescription.value;
-            props.uploadFile(description);
+            uploadFile(description);
             }}
             action="#"
         >
@@ -24,7 +54,7 @@
                 File Description:
             </label>
             <textarea
-                id="message"
+                id="fileDescription"
                 rows="4"
                 className="block p-4 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 // ref={(input) => { props.fileDescription = input }}
